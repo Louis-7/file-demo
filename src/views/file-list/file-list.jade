@@ -1,0 +1,14 @@
+doctype html
+html
+    head
+    title #{title}
+    script(
+    type="text/javascript"
+    src="views/index.js"
+    )
+
+    body
+        ul
+        each file in fileList
+            li= file
+        a(href='/') Go Back
