@@ -1,0 +1,33 @@
+doctype html
+html
+  head
+  title #{title}
+
+  body
+    input(
+        name='path'
+        placeholder='path'
+    )
+    input(
+        name='level'
+        placeholder='level'
+    )
+    input(
+        name='mtime'
+        placeholder='modifiy time'
+    )
+    input(
+        name='name'
+        placeholder='name'
+    )
+    input(
+        name='size'
+        placeholder='size'
+    )
+    input(
+        name='text'
+        placeholder='text'
+    )
+    button(value='search') search
+
+    p #{checkResult}
