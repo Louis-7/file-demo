@@ -47,20 +47,43 @@ let filterFileByOptions = (fileList, xFilterOptions) => {
             //check mtime
             if (options.mtime) {
                 let mtimeOperator = ['+', '-'].indexOf(options.mtime.substr(0, 1)) > -1 ? options.mtime.substr(0, 1) : '=',
-                    targetTime = moment(`${moment().year()}-${moment().month()}-${moment().date()}`).subtract(['+', '-'].indexOf(options.mtime.substr(0, 1)) > -1 ? options.mtime.substr(1) : options.mtime, 'days'),
+                    pastDays = parseInt(['+', '-'].indexOf(options.mtime.substr(0, 1)) > -1 ? options.mtime.substr(1) : options.mtime),
+                    targetTime = moment(`${moment().year()}-${moment().month()}-${moment().date()}`,'YYYY-M-D').subtract(pastDays, 'days'),
                     momentMTime = `${stat.mtime.getFullYear()}-${stat.mtime.getMonth()}-${stat.mtime.getDate()}`;
 
                 switch (mtimeOperator) {
                     case '+':
-                        if (!moment(momentMTime).isBefore(targetTime)) pass = false;
+                        if (!moment(momentMTime,'YYYY-M-D').isBefore(targetTime)) pass = false;
                         break;
                     case '-':
-                        if (!moment(momentMTime).isAfter(targetTime)) pass = false;
+                        if (!moment(momentMTime,'YYYY-M-D').isAfter(targetTime)) pass = false;
                         break;
                     case '=':
-                        if (!moment(momentMTime).isSame(targetTime)) pass = false;
+                        if (!moment(momentMTime,'YYYY-M-D').isSame(targetTime)) pass = false;
                         break;
                     default:
+                        throw 'Operator for mtime is not right'
+                }
+            }
+
+            // check size
+            if (options.size && pass) {
+                let sizeOperator = ['+', '-'].indexOf(options.size.substr(0, 1)) > -1 ? options.size.substr(0, 1) : '=',
+                    sizeUnit = ['k', 'm'].indexOf(options.size.substr(-1, 1)) > -1 ? options.size.substr(-1, 1) : 'k',
+                    fileSize = formatSize(options.size, sizeUnit);
+
+                switch (sizeOperator) {
+                    case '+':
+                        if (stat.size <= fileSize) pass = false;
+                        break;
+                    case '-':
+                        if (~stat.size >= fileSize) pass = false;
+                        break;
+                    case '=':
+                        if (stat.size !== fileSize) pass = false;
+                        break;
+                    default:
+                        throw 'Operator for file is not right'
                 }
             }
 
@@ -73,6 +96,25 @@ let filterFileByOptions = (fileList, xFilterOptions) => {
     return Promise.all(promiseList).then(() => {
         return finalList;
     })
+};
+
+let formatSize = (size, unit) => {
+    let havePreFix = ['+', '-'].indexOf(size.substr(0, 1)) > -1,
+        havePostFix = ['k', 'm'].indexOf(size.substr(-1, 1)) > -1;
+
+    if (havePreFix) size = size.substr(1);
+    if (havePostFix) size = size.substr(-1);
+
+    size = parseInt(size);
+
+    // convert mb to kb
+    if (unit === 'm') {
+        size *= 1024 * 1024;
+    }else{
+        size *= 1024;
+    }
+
+    return size;
 };
 
 let fileFilterOptionsOptimize = (filterOptions) => {
@@ -89,6 +131,7 @@ let fileFilterOptionsOptimize = (filterOptions) => {
     if (filterOptions.size && !sizePatt.test(filterOptions.size)) {
         throw ('The value of size is not right. Please check instruction to continue.')
     }
+    if (filterOptions.size) filterOptions.size.toLowerCase();
 
     if (filterOptions.text && typeof filterOptions.text !== 'string') {
         throw ("The value of text should be a string");
