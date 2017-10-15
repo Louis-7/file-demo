@@ -1,0 +1,54 @@
+body{
+    font-size: 12px;
+}
+
+.file-form{
+    margin:10px;
+    padding: 5px;
+}
+
+.input-block {
+    margin-top: 10px;
+    color: #aaaaaa;
+}
+
+.input-block label{
+    display: inline-block;
+    margin-bottom: 5px;
+    font-size: 0.8rem;
+}
+
+.input-block input {
+    display: block;
+    height: 30px;
+    width: 100%;
+    border: 1px solid #aaaaaa;
+    border-radius: 5px;
+    line-height: 28px;
+    padding-left: 5px;
+}
+
+.input-block small {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 400;
+}
+
+button {
+    background-color: #0069d9;
+    background-image: none;
+    color: #fff;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid #0062cc;
+    margin:10px 0;
+    padding: .5rem .75rem;
+    font-size: 1rem;
+    line-height: 1.25;
+    border-radius: .25rem;
+    transition: all .15s ease-in-out;
+}

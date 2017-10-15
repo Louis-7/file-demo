@@ -1,18 +1,44 @@
 doctype html
 html
   head
-  title #{title}
-  script(
-      type="text/javascript"
-      src="views/index.js"
+    title #{title}
+    style
+      include ../style/style.css
+    script(
+        type="text/javascript"
+        src="views/index.js"
   )
 
   body
-    input(id='path' name='path' placeholder='path' value='E:\\node.js\\file-demo')
-    //input(id='level' name='level' placeholder='level')
-    input(id='mtime' type='text' name='mtime' placeholder='modifiy time')
-    input(id='name' name='name' placeholder='name')
-    input(id='size' name='size' placeholder='size')
-    input(id='text' name='text' placeholder='text')
-    button(onclick='searchFile()') Search File
-    //a(href='/result') Search File
+    div.file-form
+      div.input-block
+        label(for='path') Path:
+        input(id='path' name='path' placeholder='path' value='E:\\node.js\\file-demo')
+        small The directory you wan to find files. e.g. C:\files\my-document
+      div.input-block
+        label(for='mtime') Modify Time:
+        input(id='mtime' type='text' name='mtime' placeholder='modifiy time')
+        small Matches if someone has modified the file exactly number days ago.
+        small Number is a decimal number, optionally preceded by a plus or
+          | minus sign. If a number is given without a sign, find tests for
+          | equality; a plus sign implies "greater than" or "older than,"
+          | and a minus sign implies "less than" or "newer than".
+      div.input-block
+        label(for='name') File Name:
+        input(id='name' name='name' placeholder='name')
+        small Compares the current file name with pattern. If there is no match, the expression fails. Only support glob pattern. e.g. **/*.js
+      div.input-block
+        label(for='size') File Size:
+        input(id='size' name='size' placeholder='size')
+        small Matches if the size of the file. If you include the suffix k, the file size is number of
+         | Kilobytes (KB). If you include the suffix m, the file size isnumber of Megabytes (MB).
+         | If there is no suffix, default size will be KB.
+        small number is a decimal number, optionally preceded by a plus or
+         | minus sign. If a number is given without a sign, find tests for
+         | equality. A plus sign implies "greater than" while a minus sign
+         | implies "less than".
+      div.input-block
+        label(for='text') Text:
+        input(id='text' name='text' placeholder='text')
+        small There is text in the file matching the given string.
+      button(onclick='searchFile()') Search File
