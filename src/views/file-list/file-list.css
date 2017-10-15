@@ -53,3 +53,12 @@ button {
     border-radius: .25rem;
     transition: all .15s ease-in-out;
 }
+
+.error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #f5c6cb;
+    border-radius: .25rem;
+}

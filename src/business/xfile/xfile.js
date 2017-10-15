@@ -4,14 +4,19 @@ let utils = require("../utils/utils");
 
 let filter = (directory, options) => {
     return utils.statp(directory)
+        // check if user given path is a directory
         .then((stats) => {
-            let isFile = stats.isFile();
+            if(stats.isFile()){
+                throw ('Path is wrong, only directory accept.')
+            }
             return utils.readdirp(directory);
         })
+        // if name field is given by user, call glob to list all match files.
         .then(() => {
             if (options.name) {
                 let globPattern = path.join(directory, options.name);
                 return utils.globp(globPattern).then((filePathList)=>{
+                    // only return base name just like what readdir do.
                     return filePathList.map(x => path.basename(x));
                 });
             } else {
@@ -39,6 +44,7 @@ let filterFileByOptions = (fileList, xFilterOptions) => {
     let promiseList = [];
 
     // update options by user input
+    // make sure options are correct
     options = fileFilterOptionsOptimize(options);
 
     for (let file of fileList) {
@@ -51,11 +57,12 @@ let filterFileByOptions = (fileList, xFilterOptions) => {
 
                 //check mtime
                 if (options.mtime && pass) {
-                    let mtimeOperator = ['+', '-'].indexOf(options.mtime.substr(0, 1)) > -1 ? options.mtime.substr(0, 1) : '=',
-                        pastDays = parseInt(['+', '-'].indexOf(options.mtime.substr(0, 1)) > -1 ? options.mtime.substr(1) : options.mtime),
-                        targetTime = moment(`${moment().year()}-${moment().month()}-${moment().date()}`, 'YYYY-M-D').subtract(pastDays, 'days'),
-                        momentMTime = `${stat.mtime.getFullYear()}-${stat.mtime.getMonth()}-${stat.mtime.getDate()}`;
+                    let mtimeOperator = ['+', '-'].indexOf(options.mtime.substr(0, 1)) > -1 ? options.mtime.substr(0, 1) : '=', // greater or less
+                        pastDays = parseInt(['+', '-'].indexOf(options.mtime.substr(0, 1)) > -1 ? options.mtime.substr(1) : options.mtime), // how many days
+                        targetTime = moment(`${moment().year()}-${moment().month()}-${moment().date()}`, 'YYYY-M-D').subtract(pastDays, 'days'), // target day
+                        momentMTime = `${stat.mtime.getFullYear()}-${stat.mtime.getMonth()}-${stat.mtime.getDate()}`; // convert mtime to moment object
 
+                    // compare time
                     switch (mtimeOperator) {
                         case '+':
                             if (!moment(momentMTime, 'YYYY-M-D').isBefore(targetTime)) pass = false;
@@ -73,10 +80,11 @@ let filterFileByOptions = (fileList, xFilterOptions) => {
 
                 // check size
                 if (options.size && pass) {
-                    let sizeOperator = ['+', '-'].indexOf(options.size.substr(0, 1)) > -1 ? options.size.substr(0, 1) : '=',
-                        sizeUnit = ['k', 'm'].indexOf(options.size.substr(-1, 1)) > -1 ? options.size.substr(-1, 1) : 'k',
-                        fileSize = formatSize(options.size, sizeUnit);
+                    let sizeOperator = ['+', '-'].indexOf(options.size.substr(0, 1)) > -1 ? options.size.substr(0, 1) : '=', //greater or less
+                        sizeUnit = ['k', 'm'].indexOf(options.size.substr(-1, 1)) > -1 ? options.size.substr(-1, 1) : 'k', // unit
+                        fileSize = formatSize(options.size, sizeUnit); // file size
 
+                    // compare file size
                     switch (sizeOperator) {
                         case '+':
                             if (stat.size <= fileSize) pass = false;
@@ -94,8 +102,8 @@ let filterFileByOptions = (fileList, xFilterOptions) => {
 
                 return pass;
             })
+            //check file content
             .then((filePass) => {
-                //check file content
                 if (filePass && options.text) {
                     return utils.readFilep(file).then((content) => {
                         if (content.indexOf(options.text) > -1) {
@@ -122,7 +130,8 @@ let formatSize = (size, unit) => {
 
     size = parseInt(size);
 
-    // convert mb to kb
+    // convert mb to b
+    // convert kb to b
     if (unit === 'm') {
         size *= 1024 * 1024;
     } else {

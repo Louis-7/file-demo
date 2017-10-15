@@ -11,7 +11,10 @@ html
 
     body
         div.file-display
-            ul.file-list
-                each file in fileList
-                    li.file-item= file
+            if fileList
+                ul.file-list
+                    each file in fileList
+                        li.file-item= file
+            if err
+                div.error-message #{err}
             button(onclick='goBack()') Go Back
