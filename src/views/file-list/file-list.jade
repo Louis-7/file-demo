@@ -1,14 +1,17 @@
 doctype html
 html
     head
-    title #{title}
-    script(
-    type="text/javascript"
-    src="views/index.js"
-    )
+        title #{title}
+        style
+            include file-list.css
+        script(
+        type="text/javascript"
+        src="views/file-list/file-list.js"
+        )
 
     body
-        ul
-        each file in fileList
-            li= file
-        a(href='/') Go Back
+        div.file-display
+            ul.file-list
+                each file in fileList
+                    li.file-item= file
+            button(onclick='goBack()') Go Back
