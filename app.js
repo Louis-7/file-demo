@@ -1,7 +1,8 @@
-let express = require('express');
-let jade = require('jade');
-
-let utils = require('./src/business/utils/utils');
+// node packages
+let express = require("express");
+let jade = require("jade");
+//
+let xfile = require("./src/business/xfile/xfile");
 
 let app = express();
 
@@ -21,7 +22,6 @@ app.get('/', (req, res) => {
 app.get('/result', (req, res) => {
     let xFileDirectory = req.query.path? req.query.path : null;
     let xFileOptions = {
-        // level:req.query.level? req.query.level : null,
         mtime:req.query.mtime? req.query.mtime : null,
         name:req.query.name? req.query.name : null,
         size:req.query.size? req.query.size : null,
@@ -30,7 +30,7 @@ app.get('/result', (req, res) => {
 
     let fileList = [];
 
-    utils.filter(xFileDirectory, xFileOptions).then((files)=>{
+    xfile.filter(xFileDirectory, xFileOptions).then((files)=>{
         fileList = files;
 
         let jadeOptions = {
