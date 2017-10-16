@@ -4,21 +4,17 @@ let utils = require("../utils/utils");
 
 let filter = (directory, options) => {
     return utils.statp(directory)
-        // check if user given path is a directory
+    // check if user given path is a directory
         .then((stats) => {
-            if(stats.isFile()){
+            if (stats.isFile()) {
                 throw ('Path is wrong, only directory accept.')
             }
-            return utils.readdirp(directory);
         })
         // if name field is given by user, call glob to list all match files.
         .then(() => {
             if (options.name) {
                 let globPattern = path.join(directory, options.name);
-                return utils.globp(globPattern).then((filePathList)=>{
-                    // only return base name just like what readdir do.
-                    return filePathList.map(x => path.basename(x));
-                });
+                return utils.globp(globPattern)
             } else {
                 return Promise.resolve(directory);
             }
@@ -27,6 +23,7 @@ let filter = (directory, options) => {
         .then((filterResult) => {
             if (typeof filterResult === 'string') {
                 return utils.readdirp(filterResult).then((fileList) => {
+                    fileList = fileList.map(x => path.join(directory, x));
                     return filterFileByOptions(fileList, options);
                 })
             } else {
@@ -93,7 +90,10 @@ let filterFileByOptions = (fileList, xFilterOptions) => {
                             if (~stat.size >= fileSize) pass = false;
                             break;
                         case '=':
-                            if (stat.size !== fileSize) pass = false;
+                            // TODO compare in KB level
+                            let cActualValue = Math.round(stat.size / 1024),
+                                cRealValue = Math.round(fileSize / 1024);
+                            if (cActualValue !== cRealValue) pass = false;
                             break;
                         default:
                             throw 'Operator for file is not right'
@@ -117,7 +117,7 @@ let filterFileByOptions = (fileList, xFilterOptions) => {
     }
 
     return Promise.all(promiseList).then(() => {
-        return finalList;
+        return finalList.map(x => path.basename(x));
     })
 };
 

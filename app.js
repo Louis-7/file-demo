@@ -29,6 +29,11 @@ app.get('/result', (req, res) => {
         text: req.query.text ? req.query.text : null,
     };
 
+    // set default path
+    if(!xFileDirectory || (xFileDirectory && !xFileDirectory.trim())){
+        xFileDirectory = __dirname;
+    }
+
     let fileList = [];
 
     // call xfile to filter files depend on user inputs

@@ -13,8 +13,9 @@ html
     div.file-form
       div.input-block
         label(for='path') Path:
-        input(id='path' name='path' placeholder='path' value='E:\\node.js\\file-demo')
+        input(id='path' name='path' placeholder='path' value='')
         small The directory you wan to find files. e.g. C:\files\my-document
+          small If you don't input anything, it will search project directory by default.
       div.input-block
         label(for='mtime') Modify Time:
         input(id='mtime' type='text' name='mtime' placeholder='modifiy time')
@@ -26,7 +27,8 @@ html
       div.input-block
         label(for='name') File Name:
         input(id='name' name='name' placeholder='name')
-        small Compares the current file name with pattern. If there is no match, the expression fails. Only support glob pattern. e.g. **/*.js
+        small Compares the current file name with pattern. If there is no match, the expression fails.
+          strong(style="color:#000") Only support glob pattern. e.g. **/*.js
       div.input-block
         label(for='size') File Size:
         input(id='size' name='size' placeholder='size')
